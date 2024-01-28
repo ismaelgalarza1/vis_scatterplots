@@ -16,6 +16,7 @@ let padding = 40;
 
 //selects the SVG with d3
 let svg = d3.select('svg')
+let tooltip = d3.select('#tooltip')
 
 //creates the canvas for the plots
 let createCanvas = () => {
@@ -30,9 +31,9 @@ let createScales = () => {
     xScale = d3.scaleLinear()
                 .domain([d3.min(values, (items) => {
                     return items['Year']
-                }),d3.max(values, (items) => {
+                }) - 1,d3.max(values, (items) => {
                     return items['Year']
-                })])
+                })+ 1])
                 .range([padding, width-padding])
 
     yScale = d3.scaleTime ()
@@ -66,6 +67,29 @@ let createPoints = () => {
         })
         .attr('cy', (items) => {
             return yScale(new Date(items['Seconds'] * 1000))
+        })
+        .attr('fill', (items) => {
+        if (items['Doping'] != ''){
+            return 'red'
+        }else {
+            return 'brown'
+        }
+        })
+        .on('mouseover', (items) => {
+            tooltip.transition()
+                    .style('visibility', 'visible')
+
+            if (items['Doping'] != ''){
+                tooltip.text(items['Year'] + " | " + items['Name'] + " | " + items['Time'] + " | " + items['Doping'])
+            }else {
+                 tooltip.text(items['Year'] + " | " + items['Name'] + " | " + items['Time'] + " | " + "No Doping")
+
+            }
+            tooltip.attr('data-year', items['Year'])
+        }) 
+        .on('mouseout', (items) => {
+            tooltip.transition()
+                    .style('visibility', 'hidden')
         })
         
 
