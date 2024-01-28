@@ -1,0 +1,15 @@
+html {
+    background-color: grey;
+}
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+svg {
+    margin-top: 15%;
+    background-color: lightskyblue;
+    border-radius: 2%;
+}
