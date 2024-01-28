@@ -28,7 +28,20 @@ let createCanvas = () => {
 
 let createScales = () => {
     xScale = d3.scaleLinear()
+                .domain([d3.min(values, (items) => {
+                    return items['Year']
+                }),d3.max(values, (items) => {
+                    return items['Year']
+                })])
                 .range([padding, width-padding])
+
+    yScale = d3.scaleTime ()
+                .domain([d3.min(values, (items) => {
+                    return new Date(items['Seconds'] * 1000)
+                }), d3.max(values, (items) => {
+                    return new Date(items['Seconds'] * 1000)
+                })])
+                .range([padding, height - padding])
 }
 
 
@@ -36,6 +49,25 @@ let createScales = () => {
 
 //create a function that creates the points fort the scatter plot
 let createPoints = () => {
+    svg.selectAll('circle')
+        .data(values)
+        .enter()
+        .append('circle')
+        .attr('class', 'dot')
+        .attr('r', '5')
+        .attr('data-xvalue', (items) => {
+            return items['Year']
+        })
+        .attr('data-yvalue', (items) => {
+            return new Date(items['Seconds'] * 1000)
+        })
+        .attr('cx', (items) => {
+            return xScale(items['Year'])
+        })
+        .attr('cy', (items) => {
+            return yScale(new Date(items['Seconds'] * 1000))
+        })
+        
 
 }
 
@@ -43,12 +75,20 @@ let createPoints = () => {
 
 let createAxis = () => {
     let xAxis = d3.axisBottom(xScale)
+                    .tickFormat(d3.format('d'))
+    let yAxis = d3.axisLeft(yScale)
+                    .tickFormat(d3.timeFormat('%M:%S'))
+
 
     svg.append('g')
         .call(xAxis)
         .attr('id', 'x-axis')
+        .attr('transform', 'translate(0,'+ (height - padding) + ')')
 
-
+    svg.append('g')
+        .call(yAxis)
+        .attr('id', 'y-axis')
+        .attr('transform', 'translate(' + padding + ', 0 )')
 }
 
 
